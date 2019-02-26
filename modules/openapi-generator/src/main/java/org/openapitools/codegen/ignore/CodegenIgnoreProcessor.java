@@ -75,7 +75,7 @@ public class CodegenIgnoreProcessor {
      * @param targetIgnoreFile The ignore file location.
      */
     public CodegenIgnoreProcessor(final File targetIgnoreFile) {
-        loadFromFile(targetIgnoreFile);
+        //loadFromFile(targetIgnoreFile);
     }
 
     private void loadFromFile(File targetIgnoreFile) {
