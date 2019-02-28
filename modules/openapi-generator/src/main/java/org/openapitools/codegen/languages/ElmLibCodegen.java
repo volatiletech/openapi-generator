@@ -196,23 +196,21 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
                 LOGGER.info("Elm version: 0.18");
                 additionalProperties.put("isElm018", true);
                 apiTemplateFiles.put("api018.mustache", ".elm");
-                supportingFiles.add(new SupportingFile("DateOnly018.mustache", "src", "DateOnly.elm"));
-                supportingFiles.add(new SupportingFile("DateTime018.mustache", "src", "DateTime.elm"));
-                supportingFiles.add(new SupportingFile("elm-package018.mustache", "", "elm-package.json"));
-                supportingFiles.add(new SupportingFile("Main018.mustache", "src", "Main.elm"));
+                supportingFiles.add(new SupportingFile("DateOnly018.mustache", "OpenAPI/Data", "DateOnly.elm"));
+                supportingFiles.add(new SupportingFile("DateTime018.mustache", "OpenAPI/Data", "DateTime.elm"));
                 break;
             case ELM_019:
                 LOGGER.info("Elm version: 0.19");
                 additionalProperties.put("isElm019", true);
                 apiTemplateFiles.put("api.mustache", ".elm");
-                supportingFiles.add(new SupportingFile("DateOnly.mustache", "src", "DateOnly.elm"));
-                supportingFiles.add(new SupportingFile("DateTime.mustache", "src", "DateTime.elm"));
+                supportingFiles.add(new SupportingFile("DateOnly.mustache", "OpenAPI/Data", "DateOnly.elm"));
+                supportingFiles.add(new SupportingFile("DateTime.mustache", "OpenAPI/Data", "DateTime.elm"));
                 break;
             default:
                 throw new RuntimeException("Undefined Elm version");
         }
 
-        supportingFiles.add(new SupportingFile("Byte.mustache", "src", "Byte.elm"));
+        supportingFiles.add(new SupportingFile("Byte.mustache", "OpenAPI/Data", "Byte.elm"));
     }
 
     @Override
@@ -288,12 +286,12 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
 
     @Override
     public String apiFileFolder() {
-        return outputFolder + ("/src/Request/" + apiPackage().replace('.', File.separatorChar)).replace("/", File.separator);
+        return outputFolder + ("/OpenAPI/Request/" + apiPackage().replace('.', File.separatorChar)).replace("/", File.separator);
     }
 
     @Override
     public String modelFileFolder() {
-        return outputFolder + ("/src/Data/" + modelPackage().replace('.', File.separatorChar)).replace("/", File.separator);
+        return outputFolder + ("/OpenAPI/Data/" + modelPackage().replace('.', File.separatorChar)).replace("/", File.separator);
     }
 
     @Override
@@ -459,7 +457,25 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
                     }
                 }
             }
+
+            boolean hasDefault = false;
+
             for (CodegenResponse resp : op.responses) {
+               if (resp.code == "0") {
+                  hasDefault = true;
+                  op.vendorExtensions.put("hasDefault", true);
+               }
+            }
+
+            for (CodegenResponse resp : op.responses) {
+               if (hasDefault) {
+                  resp.vendorExtensions.put("hasDefault", true);
+               }
+
+               if (resp.code == "0") {
+                  resp.vendorExtensions.put("default", true);
+               }
+
                 if (resp.primitiveType || resp.isMapContainer) {
                     continue;
                 }

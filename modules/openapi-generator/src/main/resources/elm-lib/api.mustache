@@ -1,4 +1,4 @@
-module Request.{{classname}} exposing ({{#operations}}{{#operation}}{{^-first}}, {{/-first}}{{operationId}}{{/operation}}{{/operations}})
+module OpenAPI.Request.{{classname}} exposing ({{#operations}}{{#operation}}{{^-first}}, {{/-first}}{{operationId}}{{/operation}}{{/operations}})
 
 {{>imports}}import Dict
 import Http
@@ -13,6 +13,8 @@ basePath =
 {{#operations}}
   {{#operation}}
 
+type G{{operationId}}
+    = {{#responses}}{{^-first}} | {{/-first}}G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} {{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}}{{/dataType}}{{/responses}}
 
 {{#notes}}
 {-| {{{notes}}}
@@ -23,7 +25,9 @@ basePath =
 {{#-first}}    { {{/-first}}{{^-first}}    , {{/-first}}{{paramName}} : {{^required}}Maybe ({{/required}}{{#isListContainer}}List {{/isListContainer}}{{dataType}}{{^required}}){{/required}}
 {{#-last}}    } -> {{/-last}}
 {{/headerParams}}
-    { onSend : Result Http.Error {{^responses}}(){{/responses}}{{#responses}}{{#-first}}{{^dataType}}(){{/dataType}}{{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}}{{/-first}}{{/responses}} -> msg
+{ {{^responses}}handler : msg{{/responses}}{{#responses}}{{^-first}} 
+    , {{/-first}}{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}} : {{#dataType}}{{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} -> msg{{/dataType}}{{^dataType}}msg{{/dataType}}{{/responses}}
+    , errorHandler : Http.Error -> msg
 {{#enableCustomBasePaths}}    , basePath : String{{/enableCustomBasePaths}}
 {{#enableHttpRequestTrackers}}    , tracker : Maybe String{{/enableHttpRequestTrackers}}
 {{#bodyParam}}    , body : {{^required}}Maybe {{/required}}{{dataType}}{{/bodyParam}}
@@ -32,14 +36,71 @@ basePath =
     }
     -> Cmd msg
 {{operationId}} {{#headerParams.0}}headers {{/headerParams.0}}params =
-    Http.request
+    Http.riskyRequest
         { method = "{{httpMethod}}"
         , headers = {{#headerParams.0}}List.filterMap identity {{/headerParams.0}}[{{{vendorExtensions.headers}}}]
         , url = Url.crossOrigin {{#enableCustomBasePaths}}params.{{/enableCustomBasePaths}}basePath
             [{{{path}}}]
             {{#queryParams.0}}(List.filterMap identity {{/queryParams.0}}[{{{vendorExtensions.query}}}]{{#queryParams.0}}){{/queryParams.0}}
         , body = {{#bodyParam}}{{^required}}Maybe.withDefault Http.emptyBody <| Maybe.map ({{/required}}Http.jsonBody {{#required}}<|{{/required}}{{^required}}<<{{/required}} {{vendorExtensions.elmEncoder}}{{^required}}){{/required}} params.body{{/bodyParam}}{{^bodyParam}}Http.emptyBody{{/bodyParam}}
-        , expect = {{^responses}}Http.expectWhatever params.onSend{{/responses}}{{#responses}}{{#-first}}{{^dataType}}Http.expectWhatever params.onSend{{/dataType}}{{#dataType}}Http.expectJson params.onSend {{#isMapContainer}}(Decode.dict {{/isMapContainer}}{{#isListContainer}}(Decode.list {{/isListContainer}}{{#vendorExtensions}}{{elmDecoder}}{{/vendorExtensions}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}}{{/dataType}}{{/-first}}{{/responses}}
+        , expect = {{^responses}}Http.expectWhatever (\r -> case r of Ok _ -> return params.handler; Err e -> params.errorHandler e ){{/responses}}{{#responses.0}}Http.expectStringResponse 
+            (\r -> case r of 
+                Err e ->
+                  params.errorHandler e
+                Ok g -> 
+                    case g of ->
+                        {{#responses}}
+                        G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} x{{/dataType}} -> params.{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} x{{/dataType}}
+                        {{/responses}}
+            )
+            (\resp -> 
+                  let
+                     statusHandlers metadata body = 
+                     case metadata.statusCode of
+                        {{#responses}}
+                        {{^vendorExtensions.default}}{{code}} ->
+                        {{^dataType}}
+                           Ok G{{operationId}}{{code}}
+                        {{/dataType}}
+                        {{#dataType}}
+                            Result.map G{{operationId}}{{code}} <| Result.mapError (BadBody << Json.errorToString) <| Json.decodeString {{#isMapContainer}}(Decode.dict {{/isMapContainer}}{{#isListContainer}}(Decode.list {{/isListContainer}}{{#vendorExtensions}}{{elmDecoder}}{{/vendorExtensions}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} body{{/dataType}}
+                        {{/vendorExtensions.default}}
+                        {{/responses}}
+
+                        {{#vendorExtensions.hasDefault}}
+                        _ ->
+                        {{#responses}}
+                        {{#vendorExtensions.default}}
+                        {{^dataType}}
+                            Ok G{{operationId}}Default
+                        {{/dataType}}
+                        {{#dataType}}
+                            Result.map G{{operationId}}Default <| Result.mapError (BadBody << Json.errorToString) <| Json.decodeString {{#isMapContainer}}(Decode.dict {{/isMapContainer}}{{#isListContainer}}(Decode.list {{/isListContainer}}{{#vendorExtensions}}{{elmDecoder}}{{/vendorExtensions}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} body{{/dataType}}
+                        {{/vendorExtensions.default}}
+                        {{/responses}}
+                        {{/vendorExtensions.hasDefault}}
+                        {{^vendorExtensions.hasDefault}}
+                        _ ->
+                           Err <| BadStatus metadata.statusCode
+                        {{/vendorExtensions.hasDefault}}
+                  in
+                  case resp of ->
+                     GoodStatus_ metadata body ->
+                        statusHandlers metadata body
+
+                     BadStatus_ metadata body ->
+                        statusHandlers metadata body
+
+                     BadUrl_ s ->
+                        Err <| BadUrl s
+
+                     Timeout_ ->
+                        Err <| Timeout
+
+                     NetworkError_ ->
+                        Err <| NetworkError
+            )
+         {{/responses.0}}
         , timeout = Just 30000
         , tracker = {{#enableHttpRequestTrackers}}params.tracker{{/enableHttpRequestTrackers}}{{^enableHttpRequestTrackers}}Nothing{{/enableHttpRequestTrackers}}
         }
