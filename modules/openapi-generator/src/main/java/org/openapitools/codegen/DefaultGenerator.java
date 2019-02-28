@@ -748,6 +748,7 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
         final String openapiGeneratorIgnore = ".openapi-generator-ignore";
         String ignoreFileNameTarget = config.outputFolder() + File.separator + openapiGeneratorIgnore;
         File ignoreFile = new File(ignoreFileNameTarget);
+        generateMetadata = false;
         if (generateMetadata && !ignoreFile.exists()) {
             String ignoreFileNameSource = File.separator + config.getCommonTemplateDir() + File.separator + openapiGeneratorIgnore;
             String ignoreFileContents = readResourceContents(ignoreFileNameSource);
