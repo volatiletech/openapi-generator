@@ -1,4 +1,4 @@
-module OpenAPI.Data.DateTime exposing (DateTime, decoder, encode, toString)
+module OpenAPI.Data exposing (DateTime, dateTimeDecoder, dateTimeEncode, dateTimeToString)
 
 import Iso8601
 import Json.Decode as Decode exposing (Decoder)
@@ -11,19 +11,19 @@ type alias DateTime =
     Time.Posix
 
 
-decoder : Decoder DateTime
-decoder =
+dateTimeDecoder : Decoder DateTime
+dateTimeDecoder =
     Decode.string
-        |> Decode.andThen decodeIsoString
+        |> Decode.andThen dateTimeDecodeIsoString
 
 
-encode : DateTime -> Encode.Value
-encode =
-    Encode.string << toString
+dateTimeEncode : DateTime -> Encode.Value
+dateTimeEncode =
+    Encode.string << dateTimeToString
 
 
-decodeIsoString : String -> Decoder DateTime
-decodeIsoString str =
+dateTimeDecodeIsoString : String -> Decoder DateTime
+dateTimeDecodeIsoString str =
     case Iso8601.toTime str of
         Result.Ok posix ->
             Decode.succeed posix
@@ -32,6 +32,6 @@ decodeIsoString str =
             Decode.fail <| "Invalid date: " ++ str
 
 
-toString : DateTime -> String
-toString =
+dateTimeToString : DateTime -> String
+dateTimeToString =
     Iso8601.fromTime

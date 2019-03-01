@@ -1,4 +1,4 @@
-module OpenAPI.Data.DateOnly exposing (DateOnly, decoder, encode, toString)
+module OpenAPI.Data exposing (DateOnly, dateOnlyDecoder, dateOnlyEncode, dateOnlyToString)
 
 import Iso8601
 import Json.Decode as Decode exposing (Decoder)
@@ -11,19 +11,19 @@ type alias DateOnly =
     Time.Posix
 
 
-decoder : Decoder DateOnly
-decoder =
+dateOnlyDecoder : Decoder DateOnly
+dateOnlyDecoder =
     Decode.string
-        |> Decode.andThen decodeIsoString
+        |> Decode.andThen dateOnlyDecodeIsoString
 
 
-encode : DateOnly -> Encode.Value
-encode =
-    Encode.string << toString
+dateOnlyEncode : DateOnly -> Encode.Value
+dateOnlyEncode =
+    Encode.string << dateOnlyToString
 
 
-decodeIsoString : String -> Decoder DateOnly
-decodeIsoString str =
+dateOnlyDecodeIsoString : String -> Decoder DateOnly
+dateOnlyDecodeIsoString str =
     case Iso8601.toTime (str ++ "T00:00:00.000Z") of
         Result.Ok posix ->
             Decode.succeed posix
@@ -32,6 +32,6 @@ decodeIsoString str =
             Decode.fail <| "Invalid date: " ++ str
 
 
-toString : DateOnly -> String
-toString =
+dateOnlyToString : DateOnly -> String
+dateOnlyToString =
     String.left 10 << Iso8601.fromTime

@@ -695,18 +695,19 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
         final String baseName = org.openapitools.codegen.utils.StringUtils.camelize(dataType, true);
         String encodeName;
         String decoderName;
+        String newDataType = dataType.substring(0, 1).toLowerCase() + dataType.substring(1);
         switch (dataTypeExposure) {
             case EXPOSED:
-                decoderName = "decoder";
-                encodeName = "encode";
+                decoderName = newDataType + "Decoder";
+                encodeName = newDataType + "Encode";
                 break;
             case INTERNAL:
                 encodeName = "encode" + StringUtils.capitalize(baseName);
                 decoderName = baseName + "Decoder";
                 break;
             case EXTERNAL:
-                encodeName = dataType + ".encode";
-                decoderName = dataType + ".decoder";
+                encodeName = "Data." + newDataType + "Encode";
+                decoderName = "Data." + newDataType + "Decoder";
                 break;
             case PRIMITIVE:
                 encodeName = "Encode." + baseName;

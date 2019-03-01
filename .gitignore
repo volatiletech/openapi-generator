@@ -1,4 +1,5 @@
 run.sh
+formatelm.sh
 petstore.yaml
 .vscode
 *.iml
