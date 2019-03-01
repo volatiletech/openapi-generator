@@ -1,10 +1,9 @@
-module OpenAPI.Request.{{classname}} exposing ({{#operations}}{{#operation}}{{^-first}}, {{/-first}}{{operationId}}{{/operation}}{{/operations}})
+module OpenAPI.Request.{{classname}} exposing ({{#operations}}{{#operation}}{{^-first}}, {{/-first}}{{operationId}}{{/operation}}{{/operations}}, basePath)
 
 {{>imports}}import Dict
 import Http
-import Json.Decode as Decode
+import Json.Decode
 import Url.Builder as Url
-
 
 {{^enableCustomBasePaths}}basePath : String
 basePath =
@@ -25,9 +24,9 @@ type G{{operationId}}
 {{#-first}}    { {{/-first}}{{^-first}}    , {{/-first}}{{paramName}} : {{^required}}Maybe ({{/required}}{{#isListContainer}}List {{/isListContainer}}{{dataType}}{{^required}}){{/required}}
 {{#-last}}    } -> {{/-last}}
 {{/headerParams}}
-{ {{^responses}}handler : msg{{/responses}}{{#responses}}{{^-first}} 
-    , {{/-first}}{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}} : {{#dataType}}{{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} -> msg{{/dataType}}{{^dataType}}msg{{/dataType}}{{/responses}}
-    , errorHandler : Http.Error -> msg
+    { {{^responses}}handler : msg{{/responses}}{{#responses}}{{^-first}} 
+    , {{/-first}}h{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}} : {{#dataType}}{{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} -> msg{{/dataType}}{{^dataType}}msg{{/dataType}}{{/responses}}
+    , hError : Http.Error -> msg
 {{#enableCustomBasePaths}}    , basePath : String{{/enableCustomBasePaths}}
 {{#enableHttpRequestTrackers}}    , tracker : Maybe String{{/enableHttpRequestTrackers}}
 {{#bodyParam}}    , body : {{^required}}Maybe {{/required}}{{dataType}}{{/bodyParam}}
@@ -48,7 +47,7 @@ type G{{operationId}}
                 Err e ->
                   params.errorHandler e
                 Ok g -> 
-                    case g of ->
+                    case g of
                         {{#responses}}
                         G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} x{{/dataType}} -> params.{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} x{{/dataType}}
                         {{/responses}}
@@ -56,49 +55,49 @@ type G{{operationId}}
             (\resp -> 
                   let
                      statusHandlers metadata body = 
-                     case metadata.statusCode of
-                        {{#responses}}
-                        {{^vendorExtensions.default}}{{code}} ->
-                        {{^dataType}}
-                           Ok G{{operationId}}{{code}}
-                        {{/dataType}}
-                        {{#dataType}}
-                            Result.map G{{operationId}}{{code}} <| Result.mapError (BadBody << Json.errorToString) <| Json.decodeString {{#isMapContainer}}(Decode.dict {{/isMapContainer}}{{#isListContainer}}(Decode.list {{/isListContainer}}{{#vendorExtensions}}{{elmDecoder}}{{/vendorExtensions}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} body{{/dataType}}
-                        {{/vendorExtensions.default}}
-                        {{/responses}}
+                        case metadata.statusCode of
+                           {{#responses}}
+                           {{^vendorExtensions.default}}{{code}} ->
+                           {{^dataType}}
+                              Ok G{{operationId}}{{code}}
+                           {{/dataType}}
+                           {{#dataType}}
+                               Result.map G{{operationId}}{{code}} <| Result.mapError (Http.BadBody << Json.Decode.errorToString) <| Json.Decode.decodeString {{#isMapContainer}}(Json.Decode.dict {{/isMapContainer}}{{#isListContainer}}(Json.Decode.list {{/isListContainer}}{{#vendorExtensions}}{{elmDecoder}}{{/vendorExtensions}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} body{{/dataType}}
+                           {{/vendorExtensions.default}}
+                           {{/responses}}
 
-                        {{#vendorExtensions.hasDefault}}
-                        _ ->
-                        {{#responses}}
-                        {{#vendorExtensions.default}}
-                        {{^dataType}}
-                            Ok G{{operationId}}Default
-                        {{/dataType}}
-                        {{#dataType}}
-                            Result.map G{{operationId}}Default <| Result.mapError (BadBody << Json.errorToString) <| Json.decodeString {{#isMapContainer}}(Decode.dict {{/isMapContainer}}{{#isListContainer}}(Decode.list {{/isListContainer}}{{#vendorExtensions}}{{elmDecoder}}{{/vendorExtensions}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} body{{/dataType}}
-                        {{/vendorExtensions.default}}
-                        {{/responses}}
-                        {{/vendorExtensions.hasDefault}}
-                        {{^vendorExtensions.hasDefault}}
-                        _ ->
-                           Err <| BadStatus metadata.statusCode
-                        {{/vendorExtensions.hasDefault}}
+                           {{#vendorExtensions.hasDefault}}
+                           _ ->
+                           {{#responses}}
+                           {{#vendorExtensions.default}}
+                           {{^dataType}}
+                               Ok G{{operationId}}Default
+                           {{/dataType}}
+                           {{#dataType}}
+                               Result.map G{{operationId}}Default <| Result.mapError (Http.BadBody << Json.Decode.errorToString) <| Json.Decode.decodeString {{#isMapContainer}}(Json.Decode.dict {{/isMapContainer}}{{#isListContainer}}(Json.Decode.list {{/isListContainer}}{{#vendorExtensions}}{{elmDecoder}}{{/vendorExtensions}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} body{{/dataType}}
+                           {{/vendorExtensions.default}}
+                           {{/responses}}
+                           {{/vendorExtensions.hasDefault}}
+                           {{^vendorExtensions.hasDefault}}
+                           _ ->
+                              Err <| Http.BadStatus metadata.statusCode
+                           {{/vendorExtensions.hasDefault}}
                   in
-                  case resp of ->
-                     GoodStatus_ metadata body ->
+                  case resp of
+                     Http.GoodStatus_ metadata body ->
                         statusHandlers metadata body
 
-                     BadStatus_ metadata body ->
+                     Http.BadStatus_ metadata body ->
                         statusHandlers metadata body
 
-                     BadUrl_ s ->
-                        Err <| BadUrl s
+                     Http.BadUrl_ s ->
+                        Err <| Http.BadUrl s
 
-                     Timeout_ ->
-                        Err <| Timeout
+                     Http.Timeout_ ->
+                        Err <| Http.Timeout
 
-                     NetworkError_ ->
-                        Err <| NetworkError
+                     Http.NetworkError_ ->
+                        Err <| Http.NetworkError
             )
          {{/responses.0}}
         , timeout = Just 30000
