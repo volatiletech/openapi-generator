@@ -1,4 +1,4 @@
-module OpenAPI.Data.Byte exposing (Byte, decoder, encode)
+module OpenAPI.Data exposing (Byte, decoder, encode)
 
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
@@ -8,11 +8,11 @@ type alias Byte =
     String
 
 
-decoder : Decoder Byte
+byteDecoder : Decoder Byte
 decoder =
     Decode.string
 
 
-encode : Byte -> Encode.Value
-encode model =
+byteEncode : Byte -> Encode.Value
+byteEncode model =
     Encode.string model

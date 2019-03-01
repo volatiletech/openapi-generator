@@ -1,5 +1,5 @@
-decoder : Decoder {{classname}}
-decoder =
+{{classVarName}}Decoder : Decoder {{classname}}
+{{classVarName}}Decoder =
     {{#isElm018}}decode{{/isElm018}}{{#isElm019}}Decode.succeed{{/isElm019}} {{classname}}
 {{#allVars}}
         |> {{>recordFieldDecoder}}

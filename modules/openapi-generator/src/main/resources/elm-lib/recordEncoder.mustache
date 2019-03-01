@@ -1,5 +1,5 @@
-encode : {{#vendorExtensions.discriminatorName}}String -> {{/vendorExtensions.discriminatorName}}{{classname}} -> Encode.Value
-encode {{#vendorExtensions.discriminatorName}}tag {{/vendorExtensions.discriminatorName}}model =
+{{classVarName}}Encode : {{#vendorExtensions.discriminatorName}}String -> {{/vendorExtensions.discriminatorName}}{{classname}} -> Encode.Value
+{{classVarName}}Encode {{#vendorExtensions.discriminatorName}}tag {{/vendorExtensions.discriminatorName}}model =
     Encode.object
 {{#allVars}}
         {{#-first}}[{{/-first}}{{^-first}},{{/-first}} {{>recordFieldEncoder}}

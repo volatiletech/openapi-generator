@@ -42,14 +42,14 @@ type G{{operationId}}
             [{{{path}}}]
             {{#queryParams.0}}(List.filterMap identity {{/queryParams.0}}[{{{vendorExtensions.query}}}]{{#queryParams.0}}){{/queryParams.0}}
         , body = {{#bodyParam}}{{^required}}Maybe.withDefault Http.emptyBody <| Maybe.map ({{/required}}Http.jsonBody {{#required}}<|{{/required}}{{^required}}<<{{/required}} {{vendorExtensions.elmEncoder}}{{^required}}){{/required}} params.body{{/bodyParam}}{{^bodyParam}}Http.emptyBody{{/bodyParam}}
-        , expect = {{^responses}}Http.expectWhatever (\r -> case r of Ok _ -> return params.handler; Err e -> params.errorHandler e ){{/responses}}{{#responses.0}}Http.expectStringResponse 
+        , expect = {{^responses}}Http.expectWhatever (\r -> case r of Ok _ -> return params.handler; Err e -> params.hError e ){{/responses}}{{#responses.0}}Http.expectStringResponse 
             (\r -> case r of 
                 Err e ->
-                  params.errorHandler e
+                  params.hError e
                 Ok g -> 
                     case g of
                         {{#responses}}
-                        G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} x{{/dataType}} -> params.{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} x{{/dataType}}
+                        G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} x{{/dataType}} -> params.h{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} x{{/dataType}}
                         {{/responses}}
             )
             (\resp -> 
