@@ -1,7 +1,7 @@
-module OpenAPI.Request.{{classname}} exposing ({{#operations}}{{#operation}}{{^-first}}, {{/-first}}{{operationId}}{{/operation}}{{/operations}}, basePath)
+module OpenApi.Request.{{classname}} exposing ({{#operations}}{{#operation}}{{^-first}}, {{/-first}}{{operationId}}{{/operation}}{{/operations}}, basePath)
 
 import Dict
-import OpenAPI.Data as Data
+import OpenApi.Data as Data
 import Http
 import Json.Decode
 import Url.Builder as Url

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 OpenAPI-Generator Contributors (https://openapi-generator.tech)
+ * Copyright 2018 OpenApi-Generator Contributors (https://openapi-generator.tech)
  * Copyright 2018 SmartBear Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -196,21 +196,21 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
                 LOGGER.info("Elm version: 0.18");
                 additionalProperties.put("isElm018", true);
                 apiTemplateFiles.put("api018.mustache", ".elm");
-                supportingFiles.add(new SupportingFile("DateOnly018.mustache", "OpenAPI/Data", "DateOnly.elm"));
-                supportingFiles.add(new SupportingFile("DateTime018.mustache", "OpenAPI/Data", "DateTime.elm"));
+                supportingFiles.add(new SupportingFile("DateOnly018.mustache", "OpenApi/Data", "DateOnly.elm"));
+                supportingFiles.add(new SupportingFile("DateTime018.mustache", "OpenApi/Data", "DateTime.elm"));
                 break;
             case ELM_019:
                 LOGGER.info("Elm version: 0.19");
                 additionalProperties.put("isElm019", true);
                 apiTemplateFiles.put("api.mustache", ".elm");
-                supportingFiles.add(new SupportingFile("DateOnly.mustache", "OpenAPI/Data", "DateOnly.elm"));
-                supportingFiles.add(new SupportingFile("DateTime.mustache", "OpenAPI/Data", "DateTime.elm"));
+                supportingFiles.add(new SupportingFile("DateOnly.mustache", "OpenApi/Data", "DateOnly.elm"));
+                supportingFiles.add(new SupportingFile("DateTime.mustache", "OpenApi/Data", "DateTime.elm"));
                 break;
             default:
                 throw new RuntimeException("Undefined Elm version");
         }
 
-        supportingFiles.add(new SupportingFile("Byte.mustache", "OpenAPI/Data", "Byte.elm"));
+        supportingFiles.add(new SupportingFile("Byte.mustache", "OpenApi/Data", "Byte.elm"));
     }
 
     @Override
@@ -286,12 +286,12 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
 
     @Override
     public String apiFileFolder() {
-        return outputFolder + ("/OpenAPI/Request/" + apiPackage().replace('.', File.separatorChar)).replace("/", File.separator);
+        return outputFolder + ("/OpenApi/Request/" + apiPackage().replace('.', File.separatorChar)).replace("/", File.separator);
     }
 
     @Override
     public String modelFileFolder() {
-        return outputFolder + ("/OpenAPI/Data/" + modelPackage().replace('.', File.separatorChar)).replace("/", File.separator);
+        return outputFolder + ("/OpenApi/Data/" + modelPackage().replace('.', File.separatorChar)).replace("/", File.separator);
     }
 
     @Override
