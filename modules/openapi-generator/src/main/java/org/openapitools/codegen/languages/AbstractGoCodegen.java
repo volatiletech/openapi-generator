@@ -472,6 +472,7 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
 
         boolean addedTimeImport = false;
         boolean addedOSImport = false;
+        boolean addedNullImport = false;
         List<Map<String, Object>> models = (List<Map<String, Object>>) objs.get("models");
         for (Map<String, Object> m : models) {
             Object v = m.get("model");
@@ -485,6 +486,51 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
                     if (!addedOSImport && "*os.File".equals(param.baseType)) {
                         imports.add(createMapping("import", "os"));
                         addedOSImport = true;
+                    }
+                    if (!addedNullImport && param.isNullable) {
+                        imports.add(createMapping("import", "github.com/volatiletech/null"));
+                        addedNullImport = true;
+                    }
+
+                    if (param.isNullable) {
+                        switch (param.baseType) {
+                        case "integer":
+                            param.dataType = "null.Int";
+                            break;
+                        case "long":
+                            param.dataType = "null.Int64";
+                            break;
+                        case "number":
+                            param.dataType = "null.Float64";
+                            break;
+                        case "float":
+                            param.dataType = "null.Float64";
+                            break;
+                        case "double":
+                            param.dataType = "null.Float64";
+                            break;
+                        case "boolean":
+                            param.dataType = "null.Bool";
+                            break;
+                        case "string":
+                            param.dataType = "null.String";
+                            break;
+                        case "UUID":
+                            param.dataType = "null.String";
+                            break;
+                        case "date":
+                            param.dataType = "null.Time";
+                            break;
+                        case "DateTime":
+                            param.dataType = "null.Time";
+                            break;
+                        case "password":
+                            param.dataType = "null.String";
+                            break;
+                        case "ByteArray":
+                            param.dataType = "null.String";
+                            break;
+                        }
                     }
                 }
             }
