@@ -564,10 +564,6 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
     private String paramToString(final String prefix, final CodegenParameter param, final boolean useMaybe, final String maybeMapResult) {
         final String paramName = (ElmVersion.ELM_018.equals(elmVersion) ? "" : prefix + ".") + param.paramName;
 
-       System.out.println(param.paramName);
-       System.out.println(useMaybe);
-       System.out.println();
-
         if (!useMaybe) {
             param.required = true;
         }
@@ -613,8 +609,6 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
         final String just = useMaybe && param.required ? "Just (" : "";
         final String justEnd = useMaybe && param.required ? ")" : "";
         final String finished = (param.required ? just : "Maybe.map (") + mapResult + " " + mapFn + (param.required ? " " : ") ") + paramName + (param.required ? justEnd : "");
-
-        System.out.println(finished);
 
         return finished;
     }
