@@ -444,6 +444,7 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
                 final String headers = op.headerParams.stream()
                     .map(param -> paramToString("headers", param, true, "Http.header \"" + param.baseName + "\""))
                     .collect(Collectors.joining(", "));
+
                 op.vendorExtensions.put("headers", headers);
                 // TODO cookies
                 // TODO forms
@@ -463,11 +464,13 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
             for (CodegenResponse resp : op.responses) {
                if (resp.code == "0") {
                   hasDefault = true;
-                  op.vendorExtensions.put("hasDefault", true);
                }
             }
 
+
             for (CodegenResponse resp : op.responses) {
+               // add a hasDefault to every response if at least one of the
+               // responses has a default handler
                if (hasDefault) {
                   resp.vendorExtensions.put("hasDefault", true);
                }
@@ -560,6 +563,11 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
 
     private String paramToString(final String prefix, final CodegenParameter param, final boolean useMaybe, final String maybeMapResult) {
         final String paramName = (ElmVersion.ELM_018.equals(elmVersion) ? "" : prefix + ".") + param.paramName;
+
+       System.out.println(param.paramName);
+       System.out.println(useMaybe);
+       System.out.println();
+
         if (!useMaybe) {
             param.required = true;
         }
@@ -602,9 +610,13 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
                 mapResult = maybeMapResult + (param.required ? " <|" : " <<");
             }
         }
-        final String just = useMaybe ? "Just (" : "";
-        final String justEnd = useMaybe ? ")" : "";
-        return (param.required ? just : "Maybe.map (") + mapResult + " " + mapFn + (param.required ? " " : ") ") + paramName + (param.required ? justEnd : "");
+        final String just = useMaybe && param.required ? "Just (" : "";
+        final String justEnd = useMaybe && param.required ? ")" : "";
+        final String finished = (param.required ? just : "Maybe.map (") + mapResult + " " + mapFn + (param.required ? " " : ") ") + paramName + (param.required ? justEnd : "");
+
+        System.out.println(finished);
+
+        return finished;
     }
 
     @Override
@@ -706,8 +718,8 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
                 decoderName = baseName + "Decoder";
                 break;
             case EXTERNAL:
-                encodeName = "Data." + newDataType + "Encode";
-                decoderName = "Data." + newDataType + "Decoder";
+                encodeName =  newDataType + "Encode";
+                decoderName =  newDataType + "Decoder";
                 break;
             case PRIMITIVE:
                 encodeName = "Encode." + baseName;

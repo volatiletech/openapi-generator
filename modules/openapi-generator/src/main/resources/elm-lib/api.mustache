@@ -1,7 +1,7 @@
 module OpenApi.Request.{{classname}} exposing ({{#operations}}{{#operation}}{{^-first}}, {{/-first}}{{operationId}}{{/operation}}{{/operations}}, basePath)
 
 import Dict
-import OpenApi.Data as Data
+import OpenApi.Data exposing (..) 
 import Http
 import Json.Decode
 import Url.Builder as Url
@@ -14,7 +14,7 @@ basePath =
   {{#operation}}
 
 type G{{operationId}}
-    = {{#responses}}{{^-first}} | {{/-first}}G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} {{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}Data.{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}}{{/dataType}}{{/responses}}
+    = {{#responses}}{{^-first}} | {{/-first}}G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}} {{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}}{{/dataType}}{{/responses}}
 
 {{#notes}}
 {-| {{{notes}}}
@@ -26,7 +26,7 @@ type G{{operationId}}
 {{#-last}}    } -> {{/-last}}
 {{/headerParams}}
     { {{^responses}}handler : msg{{/responses}}{{#responses}}{{^-first}} 
-    , {{/-first}}h{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}} : {{#dataType}}{{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}Data.{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} -> msg{{/dataType}}{{^dataType}}msg{{/dataType}}{{/responses}}
+    , {{/-first}}h{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}} : {{#dataType}}{{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} -> msg{{/dataType}}{{^dataType}}msg{{/dataType}}{{/responses}}
     , hError : Http.Error -> msg
 {{#enableCustomBasePaths}}    , basePath : String{{/enableCustomBasePaths}}
 {{#enableHttpRequestTrackers}}    , tracker : Maybe String{{/enableHttpRequestTrackers}}
@@ -38,7 +38,7 @@ type G{{operationId}}
 {{operationId}} {{#headerParams.0}}headers {{/headerParams.0}}params =
     Http.riskyRequest
         { method = "{{httpMethod}}"
-        , headers = {{#headerParams.0}}List.filterMap identity {{/headerParams.0}}(Http.header "Content-Type" "application/json" :: [{{{vendorExtensions.headers}}}])
+        , headers = {{#headerParams.0}}List.filterMap identity (Just ({{/headerParams.0}}Http.header "Content-Type" "application/json"{{#headerParams.0}}){{/headerParams.0}} :: [{{{vendorExtensions.headers}}}]{{#headerParams.0}}){{/headerParams.0}}
         , url = Url.crossOrigin {{#enableCustomBasePaths}}params.{{/enableCustomBasePaths}}basePath
             [{{{path}}}]
             {{#queryParams.0}}(List.filterMap identity {{/queryParams.0}}[{{{vendorExtensions.query}}}]{{#queryParams.0}}){{/queryParams.0}}
