@@ -26,7 +26,7 @@ type G{{operationId}}
 {{#-last}}    } -> {{/-last}}
 {{/headerParams}}
     { {{^responses}}handler : msg{{/responses}}{{#responses}}{{^-first}} 
-    , {{/-first}}h{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}} : {{#vendorExtensions.default}}Int -> {{/vendorExtensions.default}}{{#dataType}}{{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#isMapContainer}}){{/isMapContainer}} -> msg{{/dataType}}{{^dataType}}msg{{/dataType}}{{/responses}}
+    , {{/-first}}h{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}} : {{#vendorExtensions.default}}(Int, {{/vendorExtensions.default}}{{#dataType}}{{#isMapContainer}}(Dict.Dict String {{/isMapContainer}}{{#isListContainer}}(List {{/isListContainer}}{{dataType}}{{#isListContainer}}){{/isListContainer}}{{#vendorExtensions.default}}){{/vendorExtensions.default}}{{#isMapContainer}}){{/isMapContainer}} -> msg{{/dataType}}{{^dataType}}msg{{/dataType}}{{/responses}}
     , hError : Http.Error -> msg
 {{#enableCustomBasePaths}}    , basePath : String{{/enableCustomBasePaths}}
 {{#enableHttpRequestTrackers}}    , tracker : Maybe String{{/enableHttpRequestTrackers}}
@@ -50,7 +50,7 @@ type G{{operationId}}
                 Ok g -> 
                     case g of
                         {{#responses}}
-                        G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}}{{#vendorExtensions.default}} statusCode{{/vendorExtensions.default}} obj{{/dataType}} -> params.h{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}}{{#vendorExtensions.default}} statusCode{{/vendorExtensions.default}} obj{{/dataType}}
+                        G{{operationId}}{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}}{{#vendorExtensions.default}} statusCode{{/vendorExtensions.default}} obj{{/dataType}} -> params.h{{^vendorExtensions.default}}{{code}}{{/vendorExtensions.default}}{{#vendorExtensions.default}}Default{{/vendorExtensions.default}}{{#dataType}}{{#vendorExtensions.default}} (statusCode, {{/vendorExtensions.default}} obj{{#vendorExtensions.default}}){{/vendorExtensions.default}}{{/dataType}}
                         {{/responses}}
             )
             (\resp -> 
