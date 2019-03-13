@@ -556,7 +556,11 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
 
     private String toOptionalValue(String value) {
         if (value == null) {
-            return "Nothing";
+           // Value used to be "Nothing", but this was causing bugs
+           // in the case of Lists/Dicts.
+           // This "technically" shouldn't be a problem because we include
+           // every field in the "required" array now.
+            return "";
         }
         return "(Just " + value + ")";
     }
