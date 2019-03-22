@@ -494,41 +494,32 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
 
                     if (param.isNullable) {
                         switch (param.baseType) {
-                        case "integer":
+                        case "int":
                             param.dataType = "null.Int";
                             break;
-                        case "long":
+                        case "int32":
+                            param.dataType = "null.Int32";
+                            break;
+                        case "int64":
                             param.dataType = "null.Int64";
                             break;
-                        case "number":
+                        case "float32":
+                            param.dataType = "null.Float32";
+                            break;
+                        case "float64":
                             param.dataType = "null.Float64";
                             break;
-                        case "float":
-                            param.dataType = "null.Float64";
-                            break;
-                        case "double":
-                            param.dataType = "null.Float64";
-                            break;
-                        case "boolean":
+                        case "bool":
                             param.dataType = "null.Bool";
                             break;
                         case "string":
                             param.dataType = "null.String";
                             break;
-                        case "UUID":
+                        case "uuid":
                             param.dataType = "null.String";
                             break;
-                        case "date":
+                        case "time.Time":
                             param.dataType = "null.Time";
-                            break;
-                        case "DateTime":
-                            param.dataType = "null.Time";
-                            break;
-                        case "password":
-                            param.dataType = "null.String";
-                            break;
-                        case "ByteArray":
-                            param.dataType = "null.String";
                             break;
                         }
                     }
