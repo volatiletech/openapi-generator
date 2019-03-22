@@ -38,7 +38,7 @@ type G{{operationId}}
 {{operationId}} {{#headerParams.0}}headers {{/headerParams.0}}params =
     Http.riskyRequest
         { method = "{{httpMethod}}"
-        , headers = {{#headerParams.0}}List.filterMap identity (Just ({{/headerParams.0}}Http.header "Content-Type" "application/json"{{#headerParams.0}}){{/headerParams.0}} :: [{{{vendorExtensions.headers}}}]{{#headerParams.0}}){{/headerParams.0}}
+        , headers = {{#headerParams.0}}List.filterMap identity {{/headerParams.0}} [{{{vendorExtensions.headers}}}]
         , url = Url.crossOrigin {{#enableCustomBasePaths}}params.{{/enableCustomBasePaths}}basePath
             [{{{path}}}]
             {{#queryParams.0}}(List.filterMap identity {{/queryParams.0}}[{{{vendorExtensions.query}}}]{{#queryParams.0}}){{/queryParams.0}}
