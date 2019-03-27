@@ -487,39 +487,45 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
                         imports.add(createMapping("import", "os"));
                         addedOSImport = true;
                     }
-                    if (!addedNullImport && param.isNullable) {
-                        imports.add(createMapping("import", "github.com/volatiletech/null"));
-                        addedNullImport = true;
-                    }
 
+                    boolean needNullImport = false;
                     if (param.isNullable) {
                         switch (param.baseType) {
                         case "int":
                             param.dataType = "null.Int";
+                            needNullImport = true;
                             break;
                         case "int32":
                             param.dataType = "null.Int32";
+                            needNullImport = true;
                             break;
                         case "int64":
                             param.dataType = "null.Int64";
+                            needNullImport = true;
                             break;
                         case "float32":
                             param.dataType = "null.Float32";
+                            needNullImport = true;
                             break;
                         case "float64":
                             param.dataType = "null.Float64";
+                            needNullImport = true;
                             break;
                         case "bool":
                             param.dataType = "null.Bool";
+                            needNullImport = true;
                             break;
                         case "string":
                             param.dataType = "null.String";
+                            needNullImport = true;
                             break;
                         case "uuid":
                             param.dataType = "null.String";
+                            needNullImport = true;
                             break;
                         case "time.Time":
                             param.dataType = "null.Time";
+                            needNullImport = true;
                             break;
                         default:
                             // For types for which we don't understand we probably need to
@@ -528,6 +534,11 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
                             if (!param.dataType.startsWith("map") && !param.dataType.startsWith("[]"))
                                 param.dataType = "*"+param.dataType;
                             break;
+                        }
+
+                        if (!addedNullImport && needNullImport) {
+                            imports.add(createMapping("import", "github.com/volatiletech/null"));
+                            addedNullImport = true;
                         }
                     }
                 }
