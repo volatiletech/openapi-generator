@@ -521,6 +521,13 @@ public abstract class AbstractGoCodegen extends DefaultCodegen implements Codege
                         case "time.Time":
                             param.dataType = "null.Time";
                             break;
+                        default:
+                            // For types for which we don't understand we probably need to
+                            // make them a pointer if they're nullable (as they're likely a struct
+                            // which means omitempty stuff won't work with them)
+                            if (!param.dataType.startsWith("map") && !param.dataType.startsWith("[]"))
+                                param.dataType = "*"+param.dataType;
+                            break;
                         }
                     }
                 }
