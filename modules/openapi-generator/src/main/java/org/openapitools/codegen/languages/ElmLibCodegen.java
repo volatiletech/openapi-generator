@@ -135,7 +135,7 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
         typeMapping.put("ByteArray", "Byte");
         typeMapping.put("file", "String");
         typeMapping.put("binary", "String");
-        typeMapping.put("UUID", "Uuid");
+        typeMapping.put("UUID", "String");
 
         importMapping.clear();
 
