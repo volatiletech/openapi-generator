@@ -1,5 +1,20 @@
 <h1 align="center">OpenAPI Generator</h1>
 
+### Volatile Tech Custom Info
+
+Volatile Tech `libs` branch has the openapi generators for our projects.
+
+In this branch we have a altered version of the OpenAPI Generator for both Elm and Golang (code contained in the `modules/openapi-generator` directory).
+
+For testing for elm, run the `openapigen.sh` script which will cd into the `openapi-generator` dir, remove the old generated openapi generated library from `out/src/OpenApi`, build and execute the elm openapi-generator against the `pestore.yaml` spec file, with the output dir set to the `out/src/OpenApi` folder. This `out` folder is a simple elm test app designed to make it easy to manually test the generated elm code before pushing the openapi-generator changes. 
+
+Neither the `out` folder nor the `pestore.yaml` are pushed to the repo to prevent against spec leaks.
+
+If this is all working and you're happy with the openapi-generator changes, you can commit and push your openapi-generator changes. Once you've done this, run the `build.sh` script to push these the new generator binary and image to dockerhub and bump the generator version.
+
+
+### More
+
 <div align="center">
 
 [Master](https://github.com/OpenAPITools/openapi-generator/tree/master) (`4.0.0`): [![Build Status](https://img.shields.io/travis/OpenAPITools/openapi-generator/master.svg?label=Integration%20Test)](https://travis-ci.org/OpenAPITools/openapi-generator)
