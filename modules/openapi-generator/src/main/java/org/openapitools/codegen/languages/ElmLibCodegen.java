@@ -427,7 +427,12 @@ public class ElmLibCodegen extends DefaultCodegen implements CodegenConfig {
                 op.path = ("\"" + path + "\"").replaceAll(" \\+\\+ \"\"", "");
             } else {
                 final List<String> paths = Arrays.asList(op.path.substring(1).split("/"));
-                String path = paths.stream().map(str -> str.charAt(0) == '{' ? str : "\"" + str + "\"").collect(Collectors.joining(", "));
+                // toVarName is required here because op.pathParams have
+                // been transformed in this way already, but op.path
+                // is unchanged from the source document. This means
+                // something with _ will not match in the statement below
+                // and will generate bad code.
+                String path = paths.stream().map(str -> str.charAt(0) == '{' ? toVarName(str) : "\"" + str + "\"").collect(Collectors.joining(", "));
                 for (CodegenParameter param : op.pathParams) {
                     String str = paramToString("params", param, false, null);
                     path = path.replace("{" + param.paramName + "}", str);
